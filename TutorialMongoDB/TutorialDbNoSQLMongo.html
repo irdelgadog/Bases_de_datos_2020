@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TutorialDbNoSQLMongo.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="tutorial---bases-de-datos-no-relacionales-con-mongodb">Tutorial - Bases de datos no relacionales con MongoDB</h1>
+<h2 id="contenido">Contenido</h2>
+<ul>
+<li><strong>1. Instalación</strong></li>
+<li><strong>2. Configuración</strong></li>
+<li><strong>3. Ejemplo (Libreria) - Base de datos No SQL en MongoDb</strong></li>
+<li><strong>4. Referencias</strong></li>
+</ul>
+<h2 id="1-instalaci%C3%B3n-windows">1. Instalación (Windows)</h2>
+<p><strong>1.1.</strong> Descargar el archivo de instalación en el sitio oficial de <a href="https://www.mongodb.com/download-center/community">MongoDB</a></p>
+<center>
+<p><img src="./TurtorialMongo/descargaMongo.png" alt="image "></p>
+</center>
+<p><strong>1.2.</strong> Una vez descargado, ejecutar el archivo de instalación y seguir los pasos.</p>
+<center>
+<p><img src="./TurtorialMongo/paso 2 instalacion.png" alt="image "></p>
+<p><img src="./TurtorialMongo/paso 3 instalacion.png" alt="image "></p>
+<p><img src="./TurtorialMongo/paso 4 instalacion.png" alt="image "></p>
+</center>
+<p style='text-align: justify;'
+<p><strong>Recomendación:</strong> No seleccionar la opción <em><strong>Instalar MongoD como un servicio</strong>,</em> ya que el servicio <strong>mongod</strong> se activará automaticamente cada vez que inicie su sistema operativo y esto podría disminuir el rendimiento de su equipo. Para el ejercicio académico, es buena práctica activar manualmente el servicio únicamente cuando se requiera.</p>
+<center>
+<p><img src="./TurtorialMongo/paso 5 instalacion.png" alt="image "></p>
+<p><img src="./TurtorialMongo/paso 6 instalacion.png" alt="image "></p>
+</center>
+<p style='text-align: justify;'
+<p>Una vez finalice la instalación, se ejecutará automaticamente <strong>MongoDB Compass Community</strong>, una herramienta GUI que nos permitira visualizar y manipular de forma gráfica nuestras bases de datos. La utilizaremos mas adelante.</p>
+<center>
+<p><img src="./TurtorialMongo/paso 7 instalacion.png" alt="image "></p>
+</center>
+<h2 id="2-configuraci%C3%B3n-windows">2. Configuración (Windows)</h2>
+<p style='text-align: justify;'
+<p>Cada vez que utilicemos el servicio, inicialmente debemos  activarlo y posteriormente conectarnos a este. La activación del servicio se puede realizar a través de la consola de comandos (<em>CMD</em>) del sistema operativo y la conexión se puede realizar mediante la consola o a través de la herramienta GUI (<em>MongoDB Compass Community</em>).</p>
+<p style='text-align: justify;'
+<p>Para activar el servicio de MongoDB a través de la consola de comandos, necesitamos configurar la ruta donde se encuentra el archivo de activacion para que el sistema operativo lo reconozca.</p>
+<p style='text-align: justify;'
+<p><strong>2.1.</strong> Abrir la consola de comandos <em>CMD</em> y ejecutar <code>mongod --version</code>. Si no se encuentra configurada la ruta de ubicación del archivo nos debe aparecer lo siguiente.</p>
+<center>
+<p><img src="./TurtorialMongo/paso 8 instalacion.png" alt="image "></p>
+</center>
+<p style='text-align: justify;'
+<p>Para solucionarlo vamos a adicionar la direccion donde se encuentra el archivo de activacion al path de rutas de windows.</p>
+<p style='text-align: justify;'
+<p><strong>2.2.</strong> Buscar la carpeta <strong><em>bin</em></strong> que contiente el archivo de activacion <strong><em>mongod</em></strong> y copiar esa ruta. Normalmente la carpeta se aloja en la dirección <code>C:\Program Files\MongoDB\Server\4.2\bin</code></p>
+<center>
+<p><img src="./TurtorialMongo/paso 9 instalacion.png" alt="image "></p>
+</center>
+<p><strong>2.3.</strong> Adicionar esta ruta a las variables de entorno del sistema</p>
+<center>
+<p><img src="./TurtorialMongo/paso 10 instalacion.png" alt="image "></p>
+<p><img src="./TurtorialMongo/paso 11 instalacion.png" alt="image "></p>
+<p><img src="./TurtorialMongo/paso 12 instalacion.png" alt="image "></p>
+</center>
+<p style='text-align: justify;'
+<p><strong>2.4.</strong> Verificar nuevamente en la consola de comandos que se encuentre la ruta del archivo de activacion <strong><em>mongod</em></strong> <code>mongod --version</code>. Nos debe aparecer lo siguiente.</p>
+<center>
+<p><img src="./TurtorialMongo/paso 13 instalacion.png" alt="image "></p>
+</center>
+<p style='text-align: justify;'
+<p>¡Ya esta configurado MongoDB para ejecutarse en la consola de comandos.!</p>
+<p style='text-align: justify;'
+<p><strong>2.5.</strong> Ahora, para activar el servicio <strong><em>mongod</em></strong>, ejecutamos en la consola de comandos: <code>mongod</code>.</p>
+<center>
+<p><img src="./TurtorialMongo/paso 14 instalacion.png" alt="image "></p>
+</center>
+<p style='text-align: justify;'
+<p>Sin embargo, vemos que el servicio se activa por un momento y luego vuelve a quedar inactivo. Esto pasa porque no encuentra la carpeta donde puede mantener activa la informacion del servicio. Para solucionarlo, vamos a crear la carpeta <strong><em>data</em></strong> en la ruta <code> C:\ </code> y dentro de esta carpeta creamos la carpeta <strong><em>db</em></strong>.</p>
+<center>
+<p><img src="./TurtorialMongo/paso 15 instalacion.png" alt="image "></p>
+</center>
+<p style='text-align: justify;'
+<p>Una vez creadas las carpetas <strong><em>data</em></strong> y <strong><em>db</em></strong>, activamos nuevamente el servicio en la consola con el comando <code>mongod</code> y ya deberia permanecer activo.</p>
+<center>
+<p><img src="./TurtorialMongo/paso 16 instalacion.png" alt="image "></p>
+</center>
+<p style='text-align: justify;'
+<p><strong>Nota:</strong> Es importante aclarar que esta consola no debemos cerrarla mientras nos encontremos trabajando con <strong>MongoDB</strong>.</p>
+<p style='text-align: justify;'
+<p><strong>2.6.</strong>  Finalmente, cada vez que vayamos a  trabajar con <strong>MongoDB</strong> vamos a realizar dos pasos:</p>
+<ul>
+<li>Activar el servicio <strong>MongoD</strong> con el comando <code>mongod</code>.</li>
+<li>Conectarnos al servicio <strong>MongoD</strong> (<em>en una nueva consola de comandos</em>) con el comando <code>mongo</code>.</li>
+</ul>
+<center>
+<p><img src="./TurtorialMongo/paso 17 instalacion.png" alt="image "></p>
+</center>
+<p style='text-align: justify;'
+<p>Para verificar que estamos conectados a Mongo podemos ejecutar el siguiente comando:
+<code>show dbs</code></p>
+<center>
+<p><img src="./TurtorialMongo/paso 18 instalacion.png" alt="image "></p>
+</center>
+<p style='text-align: justify;'
+<p>Si queremos conectarnos a Mongo a traves de la herramienta GUI (<strong>MongoDB Compass Community</strong>) lo podemos hacer asi:</p>
+<center>
+<p><img src="./TurtorialMongo/paso 19 config.png" alt="image "></p>
+<p><img src="./TurtorialMongo/paso 20 config.png" alt="image "></p>
+</center>
+<h2 id="3-ejemplo-libreria---base-de-datos-no-sql-en-mongodb">3. Ejemplo (Libreria) - Base de datos No SQL en MongoDB</h2>
+<p>Ahora vamos a construir en MongoDB, un ejemplo de una base de datos no relacional para una Libreria. A continuacion presentamos el modelo entidad-relacion correspondiente:</p>
+<center>
+<p><img src="./m_er_libreria.png" alt="image "></p>
+</center>
+<p>Para representar el modelo ER de la libreria en MongoDB resulta de gran utilidad presentar una equivalencia del modelo <strong>SQL</strong> con el modelo <strong>NoSQL</strong>.</p>
+<table>
+<thead>
+<tr>
+<th><center><strong>SQL Terms/Concepts</strong></center></th>
+<th><center><strong>MongoDB Terms/Concepts</strong></center></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><center>Database</center></td>
+<td><center>Database</center></td>
+</tr>
+<tr>
+<td><center>Table</center></td>
+<td><center>Collection</center></td>
+</tr>
+<tr>
+<td><center>Row</center></td>
+<td><center>Document or BSON Document</center></td>
+</tr>
+<tr>
+<td><center>Column</center></td>
+<td><center>Field</center></td>
+</tr>
+<tr>
+<td><center>Table joins</center></td>
+<td><center>$lookup, embebeded documents</center></td>
+</tr>
+<tr>
+<td><center>Primary key: Specify any unique column or column combination as primary key. </center></td>
+<td><center>Primary key: In MongoDB, the primary key is automatically set to the _id field.</center></td>
+</tr>
+</tbody>
+</table>
+<p>En MongoDB y en general en los modelos no relacionales hay tres conceptos importantes que debemos tener presentes: <strong>base de datos</strong>, <strong>colecciones</strong> y <strong>documentos</strong>. A continuación para el ejemplo de la Libreria, se presenta un esquema que muestra como se organizará la información a traves de estos tres elementos.</p>
+<center>
+<p><strong>MongoDB</strong>
+<img src="./Base de datos.png" alt="image "></p>
+</center>
+<p>Antes de crear nuestra base de datos vamos a citar algunos comandos que serán de gran utilidad para trabajar con las bases de datos en la consola de MongoDB.</p>
+<table>
+<thead>
+<tr>
+<th>Comando</th>
+<th>Funcionamiento</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>db</code></td>
+<td>Muestra la base de datos actual que estamos utilizando.</td>
+</tr>
+<tr>
+<td><code>show dbs </code></td>
+<td>Muestra las bases de datos que tenemos actualmente.</td>
+</tr>
+<tr>
+<td><code>help</code></td>
+<td>Muestra comandos generales que podemos utilizar.</td>
+</tr>
+<tr>
+<td><code>db.help()</code></td>
+<td>Obtener ayuda con los metodos relacionados a las bases de datos.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="31-creaci%C3%B3n-de-la-base-de-datos">3.1. Creación de la base de datos</h3>
+<p>Para crear una base de datos, utilizamos el comando <code>use Nombre_base_de_datos </code>. Con este comando le estamos diciendo a MongoDB que base de datos vamos a utilizar. Sin embargo, Mongo no va a crear la base de datos hasta que adicionemos como minimo una colección.</p>
+<h4 id="311-crear-la-base-de-datos-de-la-libreria">3.1.1. Crear la base de datos de la Libreria</h4>
+<ul>
+<li>Crear base de datos</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-meta">&gt;</span><span class="bash"> use Libreria</span>
+<span class="hljs-meta">&gt;</span><span class="bash"> db.createCollection(<span class="hljs-string">"Autor"</span>)</span>
+</div></code></pre>
+<ul>
+<li>Verificar que se creó correctamente la base de datos</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-meta">&gt;</span><span class="bash"> show dbs</span>
+</div></code></pre>
+<ul>
+<li>(Opcional) Si requiero eliminar la base de datos actual</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-meta">&gt;</span><span class="bash"> db.DropDatabase()</span>
+</div></code></pre>
+<center>
+<p><img src="./TurtorialMongo/ejemplo2.png" alt="image "></p>
+</center>
+<h3 id="32-adicionar-colecciones-a-la-base-de-datos">3.2. Adicionar colecciones a la base de datos</h3>
+<p>Si queremos adicionar colecciones a una base de datos utilizamos:  <code>db.collection(&quot;Nombre_colección&quot;)</code>. Tambien podemos crear colecciones de forma implicita, insertando documentos con el  comando: <code>db.Nombre_colección.insert({Documento_BSON})</code>.</p>
+<h4 id="321-crear-las-colecciones-necesarias-para-la-libreria">3.2.1 Crear las colecciones necesarias para la Libreria</h4>
+<ul>
+<li>Crear las colecciondes Autor, Libro, Usuario y Ejemplar.</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-meta">&gt;</span><span class="bash"> db.createCollection(<span class="hljs-string">"Autor"</span>)</span>
+<span class="hljs-meta">&gt;</span><span class="bash"> db.createCollection(<span class="hljs-string">"Libro"</span>)</span>
+<span class="hljs-meta">&gt;</span><span class="bash"> db.createCollection(<span class="hljs-string">"Usuario"</span>)</span>
+<span class="hljs-meta">&gt;</span><span class="bash"> db.createCollection(<span class="hljs-string">"Ejemplar"</span>)</span>
+</div></code></pre>
+<ul>
+<li>Verificar que se hayan creado correctamente las colecciones en la base de datos.</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-meta">&gt;</span><span class="bash"> show collections</span>
+</div></code></pre>
+<ul>
+<li>(Opcional) Si requiero eliminar una colección de la base de datos actual</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-meta">&gt;</span><span class="bash"> db.Nombre_Colección.Drop()</span>
+</div></code></pre>
+<center>
+<p><img src="./TurtorialMongo/ejemplo3.png" alt="image "></p>
+</center>
+<h3 id="33-adicionar-documentos-a-las-colecciones-de-la-base-de-datos">3.3. Adicionar documentos a las colecciones de la base de datos</h3>
+<p>Los documentos que se adicionan en las colecciones, son objetos JSON, que mongoDB traduce a objetos binarios (BSON) para hacer mas eficiente operaciones como la busqueda de valores. Estos objetos se componen de parejas Campo-Valor. A continuación presentamos un ejemplo de un documento JSON, que representa la informacion de un usuario.</p>
+<pre class="hljs"><code><div>{
+    <span class="hljs-attr">"nombre"</span>:<span class="hljs-string">"Ivan Delgado"</span>,
+    <span class="hljs-attr">"telefono"</span>: <span class="hljs-number">2955208</span>,
+    <span class="hljs-attr">"estado"</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">"direccion"</span>:[<span class="hljs-string">"Direccion1"</span>,<span class="hljs-string">"Direccion2"</span>],
+    <span class="hljs-attr">"fecha_creacion"</span>: new Date(<span class="hljs-string">"12/04/2020"</span>)
+}
+</div></code></pre>
+<p>Los valores en un documento pueden ser diferentes tipos de datos (Strings, numeros, booleanos, matrices, objetos..).</p>
+<p><strong>Relaciones en MongoDB</strong></p>
+<p>A diferencia de las base de datos SQL, las bases de datos NoSQL, no requieren organizar la información de forma estructurada, lo que puede traer ventajas y desventajas asociadas dependiendo del problema que se quiera resolver. A pesar que en MongoDB no existen relaciones entre elementos, se pueden hacer aproximaciones para los distintos tipos de cardinalidad que pueden encontrarse en un modelo entidad-relacion.</p>
+<ul>
+<li><strong>Relaciones 1 a 1</strong></li>
+</ul>
+<p>Este tipo de informacion se da, por ejemplo, entre un edificio y su plano, un estudiante y su historia académica, un trabajador y su curriculum...</p>
+<p>Para el caso del estudiante y su historia académica, podemos vincular el identificador del libro en el ejemplar, o al reves. Tambien podriamos incrustar un documento dentro de otro y tener toda la información en un único documento. Hay que tener en consideración como va a ser leido, como va a crecer o si es necesario tener en cuenta la atomicidad.</p>
+<ul>
+<li><strong>Relaciones 1 a N (entendiendo que N son muchos)</strong></li>
+</ul>
+<p>Este tipo de relación se daria por ejemplo entre una ciudad y sus ciudadanos, un concierto y sus entradas, entre otros.</p>
+<p>Si incrustaramos por ejemplo a las personas en el documento inicial, el documento incrementaría su tamaño hasta superar el limite permitido que son 16Mb.</p>
+<p>Si incrustamos la información de la cidudad en cada uno de los documentos de la colección persona, vamos a tener una gran probabilidad de generar inconsistencias si tratamos de actualizar la informacion de la colección ciudad.</p>
+<p>Una opción válida sería tener dos colecciones, una que contiene la información de la ciudad y otra que contenga a las N personas, y para cada persona  incrustar un atributo que contenga el id de la ciudad a la que pertenece. A continuación presentamos un ejemplo.</p>
+<p><strong>Colección Ciudades</strong></p>
+<pre class="hljs"><code><div>[
+    {
+        <span class="hljs-attr">"_id"</span> : <span class="hljs-number">1</span>,
+        <span class="hljs-attr">"nombre"</span>:<span class="hljs-string">"Bogota"</span>,
+        <span class="hljs-attr">"temperatura"</span>: <span class="hljs-number">15</span>,
+        
+    },
+    {
+        <span class="hljs-attr">"_id"</span> : <span class="hljs-number">2</span>,
+        <span class="hljs-attr">"nombre"</span>:<span class="hljs-string">"Cali"</span>,
+        <span class="hljs-attr">"Temperatura"</span>: <span class="hljs-number">30</span>,
+        
+    }
+]
+</div></code></pre>
+<p><strong>Colección Personas</strong></p>
+<pre class="hljs"><code><div>[
+    {
+        <span class="hljs-attr">"nombre"</span>:<span class="hljs-string">"Andres Perez"</span>,
+        <span class="hljs-attr">"edad"</span>: <span class="hljs-number">30</span>,
+        <span class="hljs-attr">"Ciudad"</span>: <span class="hljs-number">1</span>
+    },
+    {
+        <span class="hljs-attr">"nombre"</span>:<span class="hljs-string">"Nicolas Gonzalez"</span>,
+        <span class="hljs-attr">"edad"</span>: <span class="hljs-number">45</span>,
+        <span class="hljs-attr">"Ciudad"</span>: <span class="hljs-number">1</span>
+    }
+]
+</div></code></pre>
+<ul>
+<li><strong>Relaciones 1 a N (entendiendo que N son pocos)</strong></li>
+</ul>
+<p>Al contrario del caso anterior, en ocaciones N pueden ser pocos documentos. Por ejemplo si queremos modelar la relacion entre un post y sus comentarios, observamos que no hay muchos comentarios en un mismo Post. (podrian ser del orden de 1 a 10), y como cada comentario esta vinculado exclusivamente a un único Post y rara vez va a ser editado, una buena solución sería incrustar los N comentarios en el post correspondiente. A continuación presentamos un ejemplo.</p>
+<p><strong>Colección Posts</strong></p>
+<pre class="hljs"><code><div>[
+    {
+        <span class="hljs-attr">"_id"</span>:<span class="hljs-number">1</span>,
+        <span class="hljs-attr">"Contenido_post"</span>: <span class="hljs-string">"mensaje posteado"</span>,
+        <span class="hljs-attr">"comentarios"</span>: [
+            {
+                <span class="hljs-attr">"_id"</span>:<span class="hljs-number">5</span>,
+                <span class="hljs-attr">"comentario"</span>:<span class="hljs-string">"respuesta_1"</span>
+            },
+            {
+                <span class="hljs-attr">"_id"</span>:<span class="hljs-number">6</span>,
+                <span class="hljs-attr">"comentario"</span>:<span class="hljs-string">"respuesta_2"</span>
+            }
+        ]
+    },
+]
+</div></code></pre>
+<ul>
+<li><strong>Relaciones N a N (Pocos a Pocos o Muchos a Muchos)</strong></li>
+</ul>
+<p>Este tipo de relación, que se daría entre Libros y Autores, o entre Estudiantes y Profesores… es importante analizarla en cada caso concreto, porque en realidad (en estos ejemplos por ejemplo) podrían entenderse como relaciones Pocos a Pocos en gran parte de los casos del mundo real.</p>
+<p>Una opción sería, por ejemplo, incrustar los identificadores de cada uno de ellos en un array de identificadores… pero no es lo ideal, ya que suele crear una vulnerabilidad de inconsistencia a la hora de crear los datos en ambas direcciones, ya que no se mantienen juntos (aunque desde el punto de vista del rendimiento, podría ser interesante).</p>
+<p><strong>Libros</strong></p>
+<pre class="hljs"><code><div>[
+    {
+        <span class="hljs-attr">"_id"</span>:<span class="hljs-number">1</span>,
+        <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"Historia del tiempo"</span>,
+        <span class="hljs-attr">"autores"</span>: [<span class="hljs-number">3</span>, <span class="hljs-number">7</span>]
+    },
+]
+</div></code></pre>
+<p><strong>Autores</strong></p>
+<pre class="hljs"><code><div>[
+    {
+        <span class="hljs-attr">"_id"</span>:<span class="hljs-number">3</span>,
+        <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"Joseph Fontana"</span>,
+        <span class="hljs-attr">"libros"</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">12</span>, <span class="hljs-number">24</span>]
+    },
+    {
+        <span class="hljs-attr">"_id"</span>:<span class="hljs-number">7</span>,
+        <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"Gonzalo Ponton"</span>,
+        <span class="hljs-attr">"libros"</span>: [<span class="hljs-number">1</span>]
+    }
+]
+</div></code></pre>
+<p>Otra opción (para el ejemplo de los libros y autores) es,  en lugar de un array de identificadores, incrustar el Libro dentro del Autor, pero esto nos hará duplicar libros y será vulnerable en caso de actualización.</p>
+<p><strong>Autores</strong></p>
+<pre class="hljs"><code><div>[
+    {
+        <span class="hljs-attr">"_id"</span>:<span class="hljs-number">3</span>,
+        <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"Joseph Fontana"</span>,
+        <span class="hljs-attr">"libros"</span>:[
+                    {
+                        <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"Historia del tiempo"</span>,
+                        <span class="hljs-attr">"Editorial"</span>: <span class="hljs-string">"Critica"</span>
+                    },
+                    {
+                        <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"El tunel"</span>,
+                        <span class="hljs-attr">"Editorial"</span>: <span class="hljs-string">"Alpha&amp;Omega"</span>
+                    },
+                ]
+    },
+    {
+        <span class="hljs-attr">"_id"</span>:<span class="hljs-number">7</span>,
+        <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"Gonzalo Ponton"</span>,
+        <span class="hljs-attr">"libros"</span>:[
+                    {
+                        <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"Historia del tiempo"</span>,
+                        <span class="hljs-attr">"Editorial"</span>: <span class="hljs-string">"Critica"</span>
+                    }
+                ]
+    }
+]
+</div></code></pre>
+<p>Una tercera alternativa sería tener ambos objetos como objetos de primera clase de un único documento general.</p>
+<p><strong>Autores-Libros</strong></p>
+<pre class="hljs"><code><div>[
+    {
+        <span class="hljs-attr">"_id"</span>:<span class="hljs-number">7</span>,
+        <span class="hljs-attr">"autor"</span>: <span class="hljs-string">"Gonzalo Ponton"</span>,
+        <span class="hljs-attr">"libro"</span>:{
+                    <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"Historia del tiempo"</span>,
+                    <span class="hljs-attr">"Editorial"</span>: <span class="hljs-string">"Critica"</span>
+                }
+                
+    },
+    {
+        <span class="hljs-attr">"_id"</span>:<span class="hljs-number">7</span>,
+        <span class="hljs-attr">"autor"</span>: <span class="hljs-string">"Joseph Fontana"</span>,
+        <span class="hljs-attr">"libro"</span>:{
+                    <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"Historia del tiempo"</span>,
+                    <span class="hljs-attr">"Editorial"</span>: <span class="hljs-string">"Critica"</span>
+                }
+                
+    },
+]
+</div></code></pre>
+<ul>
+<li>
+<p><strong>Conclusión</strong>:</p>
+<p>Es normal pensar que si utilizamos documentos embebidos de mongo estaremos desnormalizando los datos y generando problemas por no respetar la tercera forma normal. Pero en realidad, mientras no dupliquemos los datos, no crearíamos vulnerabilidades.</p>
+<ul>
+<li>En relaciones <strong>uno a uno</strong> es perfectamente viable embeber los datos de forma segura porque no se duplican los datos.</li>
+<li>En relaciones <strong>uno a muchos</strong>, funciona bien si embebes los <strong>muchos</strong> en los <strong>unos</strong>.</li>
+<li>En relaciones <strong>muchos a muchos</strong>, hay que vincularlos a través de un array de identificadores en los documentos. Por algunas razones se podría querer embeber documentos, pero como resultado se duplicaría mucho contenido.</li>
+</ul>
+</li>
+</ul>
+<h4 id="331-insertar-documentos-en-las-colecciones-continuemos-con-nuestro-ejemplo-de-la-libreria">3.3.1. Insertar documentos en las colecciones (Continuemos con nuestro ejemplo de la Libreria...)</h4>
+<p>Para insertar documentos en las colecciones podemos utilizar los siguientes comandos:</p>
+<table>
+<thead>
+<tr>
+<th><center><strong>Comando</strong></center></th>
+<th><center><strong>Funcionamiento</strong></center></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>db.NameCollection.insert()</code></td>
+<td>Inserta un documento a la colección</td>
+</tr>
+<tr>
+<td><code>db.NameCollection.insertOne()</code></td>
+<td>Inserta un documento a la colección</td>
+</tr>
+<tr>
+<td><code>db.NameCollection.insertMany()</code></td>
+<td>Inserta multiples documentos a una colección</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p><strong>3.3.1.1.</strong> Insertar algunos documentos en la colección Autor</p>
+<pre class="hljs"><code><div>db.Autor.insertMany([
+    {
+        <span class="hljs-attr">"autor"</span>: <span class="hljs-string">"Gonzalo Ponton"</span>,
+        <span class="hljs-attr">"libros"</span>:[]
+    },
+    {
+        <span class="hljs-attr">"autor"</span>: <span class="hljs-string">"Ana Villamil"</span>,
+        <span class="hljs-attr">"libros"</span>:[]
+    },
+    {
+        <span class="hljs-attr">"autor"</span>: <span class="hljs-string">"Gabriel Garcia Marquez"</span>,
+        <span class="hljs-attr">"libros"</span>:[]
+    }
+])
+</div></code></pre>
+<p>Validar que se hayan insertado correctamente los documentos con el comando <code>db.Autor.find().pretty()</code>. Obtendremos como resultado:</p>
+<pre class="hljs"><code><div>{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed302e92c3fc91319be5394"</span>),
+    <span class="hljs-attr">"autor"</span> : <span class="hljs-string">"Gonzalo Ponton"</span>,
+    <span class="hljs-attr">"libros"</span> : [ ]
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed302e92c3fc91319be5395"</span>),
+    <span class="hljs-attr">"autor"</span> : <span class="hljs-string">"Ana Villamil"</span>,
+    <span class="hljs-attr">"libros"</span> : [ ]
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed330aaa855a6eecfd3f609"</span>),
+    <span class="hljs-attr">"autor"</span> : <span class="hljs-string">"Gabriel Garcia Marquez"</span>,
+    <span class="hljs-attr">"libros"</span> : [ ]
+}
+</div></code></pre>
+</li>
+<li>
+<p><strong>3.3.1.2.</strong> Insertar algunos documentos en la colección Libro</p>
+<pre class="hljs"><code><div>db.Libro.insertMany([
+    {
+        <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"El Tunel"</span>,
+        <span class="hljs-attr">"isbn"</span>: <span class="hljs-string">"978-92-95055"</span>,
+        <span class="hljs-attr">"editorial"</span>: <span class="hljs-string">"Planeta"</span>,
+        <span class="hljs-attr">"paginas"</span>: <span class="hljs-number">35</span>,
+        <span class="hljs-attr">"autores"</span>:[]
+    },
+    {
+        <span class="hljs-attr">"titulo"</span>: <span class="hljs-string">"Cien años de soledad"</span>,
+        <span class="hljs-attr">"isbn"</span>: <span class="hljs-string">"978-92-12345"</span>,
+        <span class="hljs-attr">"editorial"</span>: <span class="hljs-string">"Oveja Negra"</span>,
+        <span class="hljs-attr">"paginas"</span>: <span class="hljs-number">350</span>,
+        <span class="hljs-attr">"autores"</span>:[]
+    }
+])
+</div></code></pre>
+<p>Validar que se hayan insertado correctamente los documentos con el comando <code>db.Libro.find().pretty()</code>. Obtendremos como resultado:</p>
+<pre class="hljs"><code><div>{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539a"</span>),
+    <span class="hljs-attr">"titulo"</span> : <span class="hljs-string">"El Tunel"</span>,
+    <span class="hljs-attr">"isbn"</span> : <span class="hljs-string">"978-92-95055"</span>,
+    <span class="hljs-attr">"editorial"</span> : <span class="hljs-string">"Planeta"</span>,
+    <span class="hljs-attr">"paginas"</span> : <span class="hljs-number">35</span>,
+    <span class="hljs-attr">"autores"</span> : [ ]
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539b"</span>),
+    <span class="hljs-attr">"titulo"</span> : <span class="hljs-string">"Cien años de soledad"</span>,
+    <span class="hljs-attr">"isbn"</span> : <span class="hljs-string">"978-92-12345"</span>,
+    <span class="hljs-attr">"editorial"</span> : <span class="hljs-string">"Oveja Negra"</span>,
+    <span class="hljs-attr">"paginas"</span> : <span class="hljs-number">350</span>,
+    <span class="hljs-attr">"autores"</span> : [ ]
+}
+</div></code></pre>
+<p>Ahora vamos a adicionar a cada libro su(s) autor(es). (Para el ejercicio asumimos que los autores de &quot;El tunel&quot; son Ana Villamil y Gonzalo Ponton y de &quot;Cien años de soledad&quot; Gabriel Garcia Marquez).</p>
+<pre class="hljs"><code><div>db.Libro.update(
+    {<span class="hljs-attr">"titulo"</span> : <span class="hljs-string">"Cien años de soledad"</span>},
+    {
+        $set : {<span class="hljs-attr">"autores"</span> : [ObjectId(<span class="hljs-string">"5ed330aaa855a6eecfd3f609"</span>)]}
+    }
+)
+</div></code></pre>
+<pre class="hljs"><code><div>db.Libro.update(
+    {<span class="hljs-attr">"titulo"</span> : <span class="hljs-string">"El Tunel"</span>},
+    {
+        $set : {<span class="hljs-attr">"autores"</span> : [ObjectId(<span class="hljs-string">"5ed302e92c3fc91319be5395"</span>), 
+                            ObjectId(<span class="hljs-string">"5ed302e92c3fc91319be5394"</span>) ]}
+    }
+)
+</div></code></pre>
+<p>Para validar que la información de los autores ha sido actualizada en cada libro, utilizamos el comando <code>db.Libro.find().pretty()</code>. Obtendremos como resultado:</p>
+<pre class="hljs"><code><div>{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539a"</span>),
+    <span class="hljs-attr">"titulo"</span> : <span class="hljs-string">"El Tunel"</span>,
+    <span class="hljs-attr">"isbn"</span> : <span class="hljs-string">"978-92-95055"</span>,
+    <span class="hljs-attr">"editorial"</span> : <span class="hljs-string">"Planeta"</span>,
+    <span class="hljs-attr">"paginas"</span> : <span class="hljs-number">35</span>,
+    <span class="hljs-attr">"autores"</span> : [
+            ObjectId(<span class="hljs-string">"5ed302e92c3fc91319be5395"</span>),
+            ObjectId(<span class="hljs-string">"5ed302e92c3fc91319be5394"</span>)
+    ]
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539b"</span>),
+    <span class="hljs-attr">"titulo"</span> : <span class="hljs-string">"Cien años de soledad"</span>,
+    <span class="hljs-attr">"isbn"</span> : <span class="hljs-string">"978-92-12345"</span>,
+    <span class="hljs-attr">"editorial"</span> : <span class="hljs-string">"Oveja Negra"</span>,
+    <span class="hljs-attr">"paginas"</span> : <span class="hljs-number">350</span>,
+    <span class="hljs-attr">"autores"</span> : [
+            ObjectId(<span class="hljs-string">"5ed330aaa855a6eecfd3f609"</span>)
+    ]
+}
+</div></code></pre>
+<p>Ahora vamos a adicionar a cada autor su(s) libro(s).</p>
+<pre class="hljs"><code><div>db.Autor.update(
+    {<span class="hljs-attr">"autor"</span> : <span class="hljs-string">"Gonzalo Ponton"</span>},
+    {
+        $set : {<span class="hljs-attr">"libros"</span> : [ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539a"</span>)]}
+    }
+)
+</div></code></pre>
+<pre class="hljs"><code><div>db.Autor.update(
+    {<span class="hljs-attr">"autor"</span> : <span class="hljs-string">"Ana Villamil"</span>},
+    {
+        $set : {<span class="hljs-attr">"libros"</span> : [ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539a"</span>)]}
+    }
+)
+</div></code></pre>
+<pre class="hljs"><code><div>db.Autor.update(
+    {<span class="hljs-attr">"autor"</span> : <span class="hljs-string">"Gabriel Garcia Marquez"</span>},
+    {
+        $set : {<span class="hljs-attr">"libros"</span> : [ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539b"</span>)]}
+    }
+)
+</div></code></pre>
+<p>Para validar que la información de los libros ha sido actualizada en cada autor, utilizamos el comando <code>db.Autor.find().pretty()</code>. Obtendremos como resultado:</p>
+<pre class="hljs"><code><div>{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed302e92c3fc91319be5394"</span>),
+    <span class="hljs-attr">"autor"</span> : <span class="hljs-string">"Gonzalo Ponton"</span>,
+    <span class="hljs-attr">"libros"</span> : [
+            ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539a"</span>)
+    ]
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed302e92c3fc91319be5395"</span>),
+    <span class="hljs-attr">"autor"</span> : <span class="hljs-string">"Ana Villamil"</span>,
+    <span class="hljs-attr">"libros"</span> : [
+            ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539a"</span>)
+    ]
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed330aaa855a6eecfd3f609"</span>),
+    <span class="hljs-attr">"autor"</span> : <span class="hljs-string">"Gabriel Garcia Marquez"</span>,
+    <span class="hljs-attr">"libros"</span> : [
+            ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539b"</span>)
+    ]
+}
+</div></code></pre>
+</li>
+<li>
+<p><strong>3.3.1.3.</strong> Insertar algunos documentos en la colección Usuario</p>
+<pre class="hljs"><code><div>db.Usuario.insertMany([
+    {
+        <span class="hljs-attr">"nombre"</span>: <span class="hljs-string">"Juan Perez"</span>,
+        <span class="hljs-attr">"telefono"</span>: <span class="hljs-string">"3145985225"</span>,
+        <span class="hljs-attr">"direccion"</span>: <span class="hljs-string">"cra 5 # 23-22"</span>
+    },
+    {
+        <span class="hljs-attr">"autor"</span>: <span class="hljs-string">"Maria Andrade"</span>,
+        <span class="hljs-attr">"telefono"</span>: <span class="hljs-string">"3107985835"</span>,
+        <span class="hljs-attr">"direccion"</span>: <span class="hljs-string">"calle 5 # 2-52"</span>
+    }
+])
+</div></code></pre>
+<p>Validar que se hayan insertado correctamente los documentos con el comando <code>db.Usuario.find().pretty()</code>. Obtendremos como resultado:</p>
+<pre class="hljs"><code><div>{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed30c9a2c3fc91319be5396"</span>),
+    <span class="hljs-attr">"nombre"</span> : <span class="hljs-string">"Juan Perez"</span>,
+    <span class="hljs-attr">"telefono"</span> : <span class="hljs-string">"3145985225"</span>,
+    <span class="hljs-attr">"direccion"</span> : <span class="hljs-string">"cra 5 # 23-22"</span>
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed30c9a2c3fc91319be5397"</span>),
+    <span class="hljs-attr">"autor"</span> : <span class="hljs-string">"Maria Andrade"</span>,
+    <span class="hljs-attr">"telefono"</span> : <span class="hljs-string">"3107985835"</span>,
+    <span class="hljs-attr">"direccion"</span> : <span class="hljs-string">"calle 5 # 2-52"</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p><strong>3.3.1.4.</strong> Insertar algunos documentos en la colección Ejemplar (Vamos a crear dos ejemplares por cada libro, y cada ejemplar estará ubicado en una biblioteca diferente). Los valores que se estan insertando en el campo &quot;libro&quot;, corresponden al id de los libros previamente insertados.</p>
+<pre class="hljs"><code><div>db.Ejemplar.insertMany([
+    {
+        <span class="hljs-attr">"libro"</span>: ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539a"</span>), 
+        <span class="hljs-attr">"Localizacion"</span>: <span class="hljs-string">"Biblioteca Virgilio Barco"</span>
+    },
+    {
+        <span class="hljs-attr">"libro"</span>: ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539a"</span>),
+        <span class="hljs-attr">"Localizacion"</span>: <span class="hljs-string">"Biblioteca el Tintal"</span>
+    },
+    {
+        <span class="hljs-attr">"libro"</span>: ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539b"</span>), 
+        <span class="hljs-attr">"Localizacion"</span>: <span class="hljs-string">"Biblioteca Virgilio Barco"</span>
+    },
+    {
+        <span class="hljs-attr">"libro"</span>: ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539b"</span>),
+        <span class="hljs-attr">"Localizacion"</span>: <span class="hljs-string">"Biblioteca el Tintal"</span>
+    },
+
+])
+</div></code></pre>
+<p>Validar que se hayan insertado correctamente los documentos con el comando <code>db.Ejemplar.find().pretty()</code>. Obtendremos como resultado:</p>
+<pre class="hljs"><code><div>{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed319a12c3fc91319be539c"</span>),
+    <span class="hljs-attr">"libro"</span> : ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539a"</span>),
+    <span class="hljs-attr">"Localizacion"</span> : <span class="hljs-string">"Biblioteca Virgilio Barco"</span>
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed319a12c3fc91319be539d"</span>),
+    <span class="hljs-attr">"libro"</span> : ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539a"</span>),
+    <span class="hljs-attr">"Localizacion"</span> : <span class="hljs-string">"Biblioteca el Tintal"</span>
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed319a12c3fc91319be539e"</span>),
+    <span class="hljs-attr">"libro"</span> : ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539b"</span>),
+    <span class="hljs-attr">"Localizacion"</span> : <span class="hljs-string">"Biblioteca Virgilio Barco"</span>
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed319a12c3fc91319be539f"</span>),
+    <span class="hljs-attr">"libro"</span> : ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539b"</span>),
+    <span class="hljs-attr">"Localizacion"</span> : <span class="hljs-string">"Biblioteca el Tintal"</span>
+}
+</div></code></pre>
+</li>
+<li>
+<p><strong>3.3.1.5.</strong> Vamos a crear una coleccion para registrar la informacion relacionada con los prestamos de los ejemplares.</p>
+<pre class="hljs"><code><div><span class="hljs-meta">&gt;</span><span class="bash"> db.createCollection(<span class="hljs-string">"HistorialPrestamos"</span>)</span>
+</div></code></pre>
+<p>Insertar algunos documentos en la colección HistorialPrestamos. Cada una de estas inserciones simularan el registro del prestamo de ejemplares. Los valores de los campos &quot;usuario&quot; y &quot;ejemplar&quot;, contienen el id de algunos de los documentos de las colecciones de Usuario y Ejemplar.</p>
+<pre class="hljs"><code><div>db.HistorialPrestamos.insertMany([
+    {
+        <span class="hljs-attr">"usuario"</span>: ObjectId(<span class="hljs-string">"5ed30c9a2c3fc91319be5396"</span>), 
+        <span class="hljs-attr">"ejemplar"</span>: ObjectId(<span class="hljs-string">"5ed319a12c3fc91319be539c"</span>),
+        <span class="hljs-attr">"FechaPrestamo"</span>: new Date(<span class="hljs-number">20</span>/<span class="hljs-number">04</span>/<span class="hljs-number">2020</span>),
+        <span class="hljs-attr">"FechaDevolucion"</span>: new Date(<span class="hljs-number">25</span>/<span class="hljs-number">04</span>/<span class="hljs-number">2020</span>)
+    },
+    {
+        <span class="hljs-attr">"usuario"</span>: ObjectId(<span class="hljs-string">"5ed30c9a2c3fc91319be5396"</span>), 
+        <span class="hljs-attr">"ejemplar"</span>: ObjectId(<span class="hljs-string">"5ed319a12c3fc91319be539e"</span>),
+        <span class="hljs-attr">"FechaPrestamo"</span>: new Date(<span class="hljs-number">20</span>/<span class="hljs-number">05</span>/<span class="hljs-number">2020</span>),
+        <span class="hljs-attr">"FechaDevolucion"</span>: new Date(<span class="hljs-number">29</span>/<span class="hljs-number">05</span>/<span class="hljs-number">2020</span>)
+    },
+    {
+        <span class="hljs-attr">"usuario"</span>: ObjectId(<span class="hljs-string">"5ed30c9a2c3fc91319be5397"</span>), 
+        <span class="hljs-attr">"ejemplar"</span>: ObjectId(<span class="hljs-string">"5ed319a12c3fc91319be539d"</span>),
+        <span class="hljs-attr">"FechaPrestamo"</span>: new Date(<span class="hljs-number">02</span>/<span class="hljs-number">01</span>/<span class="hljs-number">2020</span>),
+        <span class="hljs-attr">"FechaDevolucion"</span>: new Date(<span class="hljs-number">15</span>/<span class="hljs-number">01</span>/<span class="hljs-number">2020</span>)
+    }
+])
+</div></code></pre>
+<p>Validar que se hayan insertado correctamente los documentos con el comando <code>db.HistorialPrestamos.find().pretty()</code>. Obtendremos como resultado:</p>
+<pre class="hljs"><code><div>{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed3211d2c3fc91319be53a0"</span>),
+    <span class="hljs-attr">"usuario"</span> : ObjectId(<span class="hljs-string">"5ed30c9a2c3fc91319be5396"</span>),
+    <span class="hljs-attr">"ejemplar"</span> : ObjectId(<span class="hljs-string">"5ed319a12c3fc91319be539c"</span>),
+    <span class="hljs-attr">"FechaPrestamo"</span> : ISODate(<span class="hljs-string">"1970-01-01T00:00:00Z"</span>),
+    <span class="hljs-attr">"FechaDevolucion"</span> : ISODate(<span class="hljs-string">"1970-01-01T00:00:00Z"</span>)
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed3211d2c3fc91319be53a1"</span>),
+    <span class="hljs-attr">"usuario"</span> : ObjectId(<span class="hljs-string">"5ed30c9a2c3fc91319be5396"</span>),
+    <span class="hljs-attr">"ejemplar"</span> : ObjectId(<span class="hljs-string">"5ed319a12c3fc91319be539e"</span>),
+    <span class="hljs-attr">"FechaPrestamo"</span> : ISODate(<span class="hljs-string">"1970-01-01T00:00:00Z"</span>),
+    <span class="hljs-attr">"FechaDevolucion"</span> : ISODate(<span class="hljs-string">"1970-01-01T00:00:00Z"</span>)
+}
+{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed3211d2c3fc91319be53a2"</span>),
+    <span class="hljs-attr">"usuario"</span> : ObjectId(<span class="hljs-string">"5ed30c9a2c3fc91319be5397"</span>),
+    <span class="hljs-attr">"ejemplar"</span> : ObjectId(<span class="hljs-string">"5ed319a12c3fc91319be539d"</span>),
+    <span class="hljs-attr">"FechaPrestamo"</span> : ISODate(<span class="hljs-string">"1970-01-01T00:00:00Z"</span>),
+    <span class="hljs-attr">"FechaDevolucion"</span> : ISODate(<span class="hljs-string">"1970-01-01T00:00:00Z"</span>)
+}
+</div></code></pre>
+</li>
+</ul>
+<h4 id="332-realizando-consultas-en-mongodb">3.3.2. Realizando consultas en MongoDB</h4>
+<p>Finalmente vamos a realizar algunas consultas sobre nuestra base de datos.</p>
+<ul>
+<li><strong>3.3.2.1.</strong> Consultar la informacion del libro Cien años de Soledad.<pre class="hljs"><code><div>db.Libro.findOne({<span class="hljs-attr">"titulo"</span>:<span class="hljs-string">"Cien años de soledad"</span>})
+</div></code></pre>
+Resultado:<pre class="hljs"><code><div>{
+    <span class="hljs-attr">"_id"</span> : ObjectId(<span class="hljs-string">"5ed3157d2c3fc91319be539b"</span>),
+    <span class="hljs-attr">"titulo"</span> : <span class="hljs-string">"Cien años de soledad"</span>,
+    <span class="hljs-attr">"isbn"</span> : <span class="hljs-string">"978-92-12345"</span>,
+    <span class="hljs-attr">"editorial"</span> : <span class="hljs-string">"Oveja Negra"</span>,
+    <span class="hljs-attr">"paginas"</span> : <span class="hljs-number">350</span>,
+    <span class="hljs-attr">"autores"</span> : [
+            ObjectId(<span class="hljs-string">"5ed330aaa855a6eecfd3f609"</span>)
+    ]
+}
+</div></code></pre>
+</li>
+<li><strong>3.3.2.2.</strong> Consultar cuantos ejemplares hay del libro Cien años de Soledad.<pre class="hljs"><code><div>libro = db.Libro.findOne({<span class="hljs-attr">"titulo"</span>:<span class="hljs-string">"Cien años de soledad"</span>})
+numEjemplares = db.Ejemplar.find({<span class="hljs-attr">"libro"</span>:libro._id}).count()
+print (<span class="hljs-string">"El libro "</span>+libro.titulo+<span class="hljs-string">" tiene "</span>+numEjemplares+<span class="hljs-string">" ejemplares"</span>)
+</div></code></pre>
+Resultado:<pre class="hljs"><code><div>El libro Cien años de soledad tiene <span class="hljs-number">2</span> ejemplares
+</div></code></pre>
+</li>
+<li><strong>3.3.2.3.</strong> Consultar que libros le han prestado a Juan Perez<pre class="hljs"><code><div>juan = db.Usuario.findOne({<span class="hljs-attr">"nombre"</span>:<span class="hljs-string">"Juan Perez"</span>})
+db.HistorialPrestamos.find({<span class="hljs-attr">"usuario"</span>:juan._id}).forEach(
+    (prestamo)=&gt;{
+        ejemplar = db.Ejemplar.findOne({<span class="hljs-attr">"_id"</span>:prestamo.ejemplar})
+        libro = db.Libro.findOne({<span class="hljs-attr">"_id"</span>:ejemplar.libro})
+        print(<span class="hljs-string">"Libro: "</span> + libro.titulo)
+    }
+)
+</div></code></pre>
+Resultado:<pre class="hljs"><code><div>Libro: El Tunel
+Libro: Cien años de soledad
+</div></code></pre>
+</li>
+</ul>
+<p><strong>Nota:</strong> A través de la herramienta GUI (Mongo Compass Community), puede gestionar casi que al mismo nivel de detalle toda la información relacionada con las bases de datos, colecciones y documentos. A continuacion podra observar desde la interfaz grafica la construccion de la base de datos de la Libreria.</p>
+<center>
+<p><img src="./TurtorialMongo/ejemplo4.png" alt="image "></p>
+<p><img src="./TurtorialMongo/ejemplo5.png" alt="image "></p>
+<p><img src="./TurtorialMongo/ejemplo6.png" alt="image "></p>
+<p><img src="./TurtorialMongo/ejemplo7.png" alt="image "></p>
+<p><img src="./TurtorialMongo/ejemplo8.png" alt="image "></p>
+</center>
+<h2 id="1-referencias">1. Referencias</h2>
+<ol>
+<li><a href="https://www.youtube.com/watch?v=2KMQdqDk9e8">Guia de instalación y configuración</a></li>
+<li><a href="https://docs.mongodb.com/manual/reference">Guia de referencia y documentación oficial</a></li>
+<li><a href="https://blog.findemor.es/2015/06/aprender-a-usar-mongodb-guia-5">Relaciones en MongoDB</a></li>
+</ol>
+
+</body>
+</html>
